@@ -4,6 +4,7 @@ import scipy.io as sio
 import random
 from node import Node
 from homology import ComputeBettiNumber
+
 # ————————————————————模型初始化——————————————————————
 theta=np.linspace(0,2*math.pi,360)
 ap_num=25
@@ -65,6 +66,7 @@ def complex_generator(ap_pos,ap_num,ap_radii):
     node_x=ap_pos[:,0]
     node_y=ap_pos[:,1]
     node_coor=np.vstack([node_x,node_y])
+
 
 # ————————————————————构建一阶复形——————————————————————
 
@@ -166,11 +168,12 @@ def border_functor_second(edg,tri):
 
 def main():
     # ap_pos=ap_pos_generator(ap_num,ap_radii)
-
+    
     node_x=ap_pos[:,0]
     node_y=ap_pos[:,1]
-
-
+    # ap_radii[4][0]=1.5
+    # ap_radii[1][0]=1.5
+    # ap_radii[9][0]=1.5
     complex_generator(ap_pos,ap_num,ap_radii)
 
     # for i in node_list:
@@ -188,6 +191,6 @@ def main():
     print("————————————————————————The 1st and 2nd Betti Numbers are:————————————————————")
     print("——————0th homology: %d" % ComputeBettiNumber.bettiNumber(matrix_zero.astype('float'),matrix_first.astype('float')))
     print("——————1st homology: %d" % ComputeBettiNumber.bettiNumber(matrix_first.astype('float'),matrix_second.astype('float')))
-
+    
 if __name__ == '__main__':
     main()

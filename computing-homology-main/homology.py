@@ -117,11 +117,11 @@ class ComputeBettiNumber():
       ComputeBettiNumber.finishRowReducing(B)
 
       dimKChains = A.shape[1]
-      print(dimKChains,"K阶链群维度")
+      # print(dimKChains,"K阶链群维度")
       kernelDim = dimKChains - ComputeBettiNumber.numPivotCols(A)
-      print(kernelDim,"kernel维度")
+      # print(kernelDim,"kernel维度")
       imageDim = ComputeBettiNumber.numPivotRows(B)
-      print(imageDim,"image空间维度")
+      # print(imageDim,"image空间维度")
 
       return kernelDim - imageDim
 
