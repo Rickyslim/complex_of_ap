@@ -119,9 +119,9 @@ def complex_generator(ap_pos,ap_num,ap_radii):
                             list_temp2.append(simp_temp)
             node_list[i].simp['simp3']=list_temp2
                                 
-def find_all_tri(ap_num,node_list):
+def find_all_tri(node_list):
     tri=np.array([0,0,0])
-    for i in range(ap_num+20):
+    for i in range(len(node_list)):
         if len(node_list[i].simp)<3:
             continue
         for j in range(len(node_list[i].simp['simp3'])):
@@ -130,9 +130,9 @@ def find_all_tri(ap_num,node_list):
     tri=np.delete(tri,0,axis=0)
     return tri
 
-def find_all_edg(ap_num,node_list):
+def find_all_edg(node_list):
     edg=np.array([0,0])
-    for i in range(ap_num+20):
+    for i in range(len(node_list)):
         for j in range(len(node_list[i].simp['simp2'])):
             # print(node_list[i].simp['simp2'][j]['vert'])
             edg=np.vstack((edg,node_list[i].simp['simp2'][j]['vert']))
@@ -178,16 +178,16 @@ def main():
 
     # for i in node_list:
     #     print(i.simp['simp2'])
-
-    tri=find_all_tri(ap_num,node_list)
+    print("bitch",len(node_list))
+    tri=find_all_tri(node_list)
     # print(np.size(tri,0))
-    edg=find_all_edg(ap_num,node_list)
+    edg=find_all_edg(node_list)
     # print(edg)
 
-    matrix_first=border_functor_first(edg,ap_num+20)
+    matrix_first=border_functor_first(edg,len(node_list))
     matrix_second=border_functor_second(edg,tri)
     print(np.size(matrix_first,0),np.size(matrix_first,1))
-    matrix_zero=np.zeros((1,45))
+    matrix_zero=np.zeros((1,len(node_list)))
     print("————————————————————————The 1st and 2nd Betti Numbers are:————————————————————")
     print("——————0th homology: %d" % ComputeBettiNumber.bettiNumber(matrix_zero.astype('float'),matrix_first.astype('float')))
     print("——————1st homology: %d" % ComputeBettiNumber.bettiNumber(matrix_first.astype('float'),matrix_second.astype('float')))

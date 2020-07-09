@@ -11,7 +11,7 @@ class complex_builder():
         distance=math.sqrt(math.pow((coord1[0]-coord2[0]),2)+math.pow((coord1[1]-coord2[1]),2))
         return distance
 
-    def complex_generator(self,ap_pos,ap_num,ap_radii,node_list):  
+    def complex_generator(self,ap_pos,ap_radii,node_list):  
     # ——————————————————转换ap_pos数据格式为矩阵————————————
         node_x=ap_pos[:,0]
         node_y=ap_pos[:,1]
@@ -23,8 +23,6 @@ class complex_builder():
         for i in range(np.size(node_coor,1)):
             node=Node()
             node_list.append(node)
-            if i>len(node_coor)-ap_num:
-                node_list[i].flag=1
             for j in range(np.size(node_coor,1)):
                 distance=self.dist(node_coor[:,i],node_coor[:,j])
                 if distance<=ap_radii[i]+ap_radii[j]:
@@ -69,9 +67,9 @@ class complex_builder():
                                 list_temp2.append(simp_temp)
                 node_list[i].simp['simp3']=list_temp2
                                     
-    def find_all_tri(self,ap_num,node_list):
+    def find_all_tri(self,node_list):
         tri=np.array([0,0,0])
-        for i in range(ap_num+20):
+        for i in range(len(node_list)):
             if len(node_list[i].simp)<3:
                 continue
             for j in range(len(node_list[i].simp['simp3'])):
@@ -80,9 +78,9 @@ class complex_builder():
         tri=np.delete(tri,0,axis=0)
         return tri
 
-    def find_all_edg(self,ap_num,node_list):
+    def find_all_edg(self,node_list):
         edg=np.array([0,0])
-        for i in range(ap_num+20):
+        for i in range(len(node_list)):
             for j in range(len(node_list[i].simp['simp2'])):
                 # print(node_list[i].simp['simp2'][j]['vert'])
                 edg=np.vstack((edg,node_list[i].simp['simp2'][j]['vert']))

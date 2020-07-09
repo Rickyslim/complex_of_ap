@@ -25,7 +25,6 @@ bitch=5
 def change(a):
     a=6
 change(bitch)
-print(bitch)
 
 # a=np.array([0, 7, 5, 31, 32, 41])
 # b=np.array([1,9])
