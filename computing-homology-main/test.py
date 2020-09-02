@@ -5,7 +5,10 @@ from numpy import mat
 import random
 import math
 from build_complex import complex_builder
+from incell_hole import incellhole
 from sysSetting import systemSetting
+from locate_hole import hole_locator
+from cluster import cluster_generator
 # matrix_first_mat=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/matrix_first.mat'
 # first=sio.loadmat(matrix_first_mat)
 # matrix_second_mat=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/matrix_second.mat'
@@ -15,17 +18,19 @@ from sysSetting import systemSetting
 # c=np.zeros((1,45))
 # print(type(c))
 # eng=matlab.engine.start_matlab()
-ap_pos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos.mat'
-a=sio.loadmat(ap_pos)
-ap_radii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii.mat'
-b=sio.loadmat(ap_radii)
-appos=a['APpos']
-apradii=b['ap_radii']
-bitch=5
-def change(a):
-    a=6
-change(bitch)
+appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos.mat'
+a=sio.loadmat(appos)
+apradii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii.mat'
+b=sio.loadmat(apradii)
+cluster=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/cluster.mat'
+c=sio.loadmat(cluster)
+ap_pos=a['APpos']
+ap_radii=b['ap_radii']
+ap_cluster=c['cluster']
 
+# ----------------------------------------------
+hl=hole_locator()
+cg=cluster_generator()
 # a=np.array([0, 7, 5, 31, 32, 41])
 # b=np.array([1,9])
 # c=np.intersect1d(a,b)
@@ -34,11 +39,33 @@ change(bitch)
 # t=np.unique(t,axis=0)
 # print(t[0,0])
 
+node_x=ap_pos[:,0]
+node_y=ap_pos[:,1]
+node_coor=np.vstack([node_x,node_y])
+incell=incellhole()
+# ap_radii=incell.setmaxradii(np.size(node_coor,1)-systemSetting.BORDER_AP_NUM,2.5)
 
+#将构建复形的结果node_list存入SystemSetting当中
+# print(systemSetting.node_list[0].simp['simp2'])
+# pos,radii=incell.delete_dispensable_node(init_bettis[1],ap_radii,ap_pos)
 
+# store_path=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii_bp.mat'
+# store_path2=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_bp.mat'
+# incell.store_results(pos,'APpos',store_path2)
+# incell.store_results(radii,'ap_radii',store_path)
+cluster_pos_tmp=np.zeros((45,2))
+cluster_radii_tmp=np.zeros((45,1))
+for i in range(np.size(ap_cluster,1)):
+    cluster=ap_cluster[0][i][0]
+    cluster_radii=cg.get_cluster_radii(cluster,ap_radii)
+    cluster_pos=cg.get_cluster_ap_pos(cluster,ap_pos)
 
-
-
-
-
-#matrix_first,matrix_second=eng.complex_generator()
+    fence_index=cg.get_cluster_inner_node(cluster_radii)
+    cluster_radii=incell.setmaxradii(np.size(cluster,0),2.5,fence_index)
+    init_bettis=incell.get_init_bettis(cluster_pos,cluster_radii)
+    incell.opt_radii(init_bettis[1],cluster_radii,cluster_pos,fence_index)
+    cg.merge_to_one(cluster,cluster_pos,cluster_radii,cluster_pos_tmp,cluster_radii_tmp)
+store_path=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii_bp.mat'
+store_path2=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_bp.mat'
+incell.store_results(cluster_pos_tmp,'APpos',store_path2)
+incell.store_results(cluster_radii_tmp,'ap_radii',store_path)

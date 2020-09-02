@@ -19,11 +19,12 @@ node_x=ap_pos[:,0]
 node_y=ap_pos[:,1]
 node_coor=np.vstack([node_x,node_y])
 incell=incellhole()
-ap_radii=incell.setmaxradii(np.size(node_coor,1)-systemSetting.BORDER_AP_NUM,2.5)
+# ap_radii=incell.setmaxradii(np.size(node_coor,1)-systemSetting.BORDER_AP_NUM,2.5)
 init_bettis=incell.get_init_bettis(ap_pos,ap_radii)
+print(len(systemSetting.node_list[0].simp['simp2'][0]['neighb']))
 #将构建复形的结果node_list存入SystemSetting当中
 
-# incell.opt_radii(init_bettis[1],ap_radii,ap_pos)
-# incell.store_results("bish")
+incell.opt_radii(init_bettis[1],ap_radii,ap_pos)
+incell.store_results(ap_radii)
 
 

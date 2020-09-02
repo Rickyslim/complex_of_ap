@@ -11,9 +11,9 @@ ap_num=25
 node_list=[]
 # extend_ap=int(math.pow(math.ceil(math.sqrt(ap_num)),2))
 # ap_radii=np.random.uniform(1.5,2.5,extend_ap+20)
-appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos.mat'
+appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/pos_test.mat'
 pos=sio.loadmat(appos)
-apradii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii.mat'
+apradii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/radii_test.mat'
 radii=sio.loadmat(apradii)
 ap_pos=pos['APpos']
 ap_radii=radii['ap_radii']
@@ -179,6 +179,7 @@ def main():
     # for i in node_list:
     #     print(i.simp['simp2'])
     print("bitch",len(node_list))
+    
     tri=find_all_tri(node_list)
     # print(np.size(tri,0))
     edg=find_all_edg(node_list)
