@@ -18,7 +18,7 @@ from cluster import cluster_generator
 # c=np.zeros((1,45))
 # print(type(c))
 # eng=matlab.engine.start_matlab()
-appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos.mat'
+appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_tag.mat'
 a=sio.loadmat(appos)
 apradii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii.mat'
 b=sio.loadmat(apradii)
@@ -27,6 +27,7 @@ c=sio.loadmat(cluster)
 ap_pos=a['APpos']
 ap_radii=b['ap_radii']
 ap_cluster=c['cluster']
+systemSetting.cluster=ap_cluster
 
 # ----------------------------------------------
 hl=hole_locator()
@@ -53,17 +54,21 @@ incell=incellhole()
 # store_path2=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_bp.mat'
 # incell.store_results(pos,'APpos',store_path2)
 # incell.store_results(radii,'ap_radii',store_path)
-cluster_pos_tmp=np.zeros((45,2))
+cluster_pos_tmp=np.zeros((45,3))
 cluster_radii_tmp=np.zeros((45,1))
-for i in range(np.size(ap_cluster,1)):
-    cluster=ap_cluster[0][i][0]
+for i in range(3):
+    cluster=systemSetting.cluster[0][i][0]
     cluster_radii=cg.get_cluster_radii(cluster,ap_radii)
     cluster_pos=cg.get_cluster_ap_pos(cluster,ap_pos)
+    # print(cluster_pos,'\n')
+    # fence_index=cg.get_cluster_inner_node(cluster_radii)
+    cluster_radii=incell.setmaxradii(cluster,2.5,26)
+    contour_ap,contour_border=cg.get_cluster_contour(i+1)
 
-    fence_index=cg.get_cluster_inner_node(cluster_radii)
-    cluster_radii=incell.setmaxradii(np.size(cluster,0),2.5,fence_index)
+    # print(incell.check_contour_border(contour_border,cluster_pos,cluster_radii))
     init_bettis=incell.get_init_bettis(cluster_pos,cluster_radii)
-    incell.opt_radii(init_bettis[1],cluster_radii,cluster_pos,fence_index)
+    # print(init_bettis)
+    incell.opt_radii(init_bettis[1],cluster_radii,cluster_pos,contour_border)
     cg.merge_to_one(cluster,cluster_pos,cluster_radii,cluster_pos_tmp,cluster_radii_tmp)
 store_path=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii_bp.mat'
 store_path2=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_bp.mat'
