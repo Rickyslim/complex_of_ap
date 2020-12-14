@@ -47,7 +47,7 @@ class incellhole():
     def examine_betti_numbers(self,pre_betti,ap_pos,ap_radii):
         first_betti_number,second_betti_number,node_list,edg=self.get_complex(ap_pos,ap_radii)
         if first_betti_number!=1 or second_betti_number!=pre_betti:
-            # print(first_betti_number,second_betti_number)
+            print("前两位贝蒂数：",first_betti_number,second_betti_number)
             return False
         # print(second_betti_init,second_betti_number)
         # pre_betti=second_betti_number
@@ -75,13 +75,9 @@ class incellhole():
             return True
         return False
 
-
-
-
-
-
+    # 检查在没有空洞的情况下，删除冗余节点是否引入了新的空洞
     def examine_betti_numbers_for_simplify(self,pre_betti,ap_pos,ap_radii):
-        first_betti_number,second_betti_number,node_list=self.get_complex(ap_pos,ap_radii)
+        first_betti_number,second_betti_number,node_list,edg=self.get_complex(ap_pos,ap_radii)
         if first_betti_number!=1 or second_betti_number>0:
             print(first_betti_number,second_betti_number)
             return False
@@ -118,21 +114,63 @@ class incellhole():
                 #             # print("接受概率：",math.exp((p*60)/t*-1))
                 #             ap_radii[ap_selected[0]][0]+=0.1
 
-    #删除冗余节点（实验）
+    #删除冗余节点（实验版本，即在没有空洞的情况下简化）
     def delete_dispensable_node(self,pre_betti,ap_radii,ap_pos):
-        for i in range(np.size(ap_pos,0)):
-            if i>25:
-                break
-            ap_pos_tmp=ap_pos[i]
-            ap_radii_tmp=ap_radii[i]
-            ap_pos=np.delete(ap_pos,i,axis=0)
-            ap_radii=np.delete(ap_radii,i,axis=0)
-            if not self.examine_betti_numbers_for_simplify(pre_betti,ap_pos,ap_radii):
-                ap_pos=np.insert(ap_pos,i,values=ap_pos_tmp,axis=0)
-                ap_radii=np.insert(ap_radii,i,values=ap_radii_tmp,axis=0)
+        i=0
+        while True:
+            print("剩余AP数: "+str(np.size(ap_pos,0)))
+            if i<np.size(ap_pos,0):
+                while ap_pos[i][0]==0 or ap_pos[i][0]==15 or ap_pos[i][1]==0 or ap_pos[i][1]==15:
+                    print(str(ap_pos[i][2])+"为栅栏节点，跳过")
+                    i=i+1
+                    if i>=np.size(ap_pos,0)-1:   
+                        return ap_pos,ap_radii       
+                ap_pos_tmp=ap_pos[i]
+                ap_radii_tmp=ap_radii[i]
+                ap_pos=np.delete(ap_pos,i,axis=0)
+                ap_radii=np.delete(ap_radii,i,axis=0)
+                if not self.examine_betti_numbers_for_simplify(pre_betti,ap_pos,ap_radii):
+                    print("AP "+str(ap_pos[i][2])+" 不能删除！")
+                    ap_pos=np.insert(ap_pos,i,values=ap_pos_tmp,axis=0)
+                    ap_radii=np.insert(ap_radii,i,values=ap_radii_tmp,axis=0)
+                    i=i+1
+                else:
+                    print("删除AP：",ap_pos[i][2])
             else:
-                print('deleted',i)
+                break
         return ap_pos,ap_radii
+
+    #在存在空洞的情况下简化网络复形结构（不改变空洞的形状和大小）
+    def simplify_init_complex_without_modifying_holes(self,pre_betti,ap_radii,ap_pos,hole_border_ap_list):
+        i=0
+        while True:
+            print("剩余AP数: "+str(np.size(ap_pos,0)))
+            if i<np.size(ap_pos,0):
+                while ap_pos[i][0]==0 or ap_pos[i][0]==15 or ap_pos[i][1]==0 or ap_pos[i][1]==15:
+                    print(str(ap_pos[i][2])+" 为栅栏节点，跳过")
+                    i=i+1
+                    if i>=np.size(ap_pos,0)-1:   
+                        return ap_pos,ap_radii       
+                while ap_pos[i][2] in hole_border_ap_list:
+                    print(str(ap_pos[i][2])+" 为空洞边界点，跳过")
+                    i=i+1
+                    if i>=np.size(ap_pos,0)-1:   
+                        return ap_pos,ap_radii                       
+                ap_pos_tmp=ap_pos[i]
+                ap_radii_tmp=ap_radii[i]
+                ap_pos=np.delete(ap_pos,i,axis=0)
+                ap_radii=np.delete(ap_radii,i,axis=0)
+                if not self.examine_betti_numbers(pre_betti,ap_pos,ap_radii):
+                    print("AP "+str(ap_pos[i][2])+" 不能删除！")
+                    ap_pos=np.insert(ap_pos,i,values=ap_pos_tmp,axis=0)
+                    ap_radii=np.insert(ap_radii,i,values=ap_radii_tmp,axis=0)
+                    i=i+1
+                else:
+                    print('删除AP：',ap_pos[i][2])
+            else:
+                break
+        return ap_pos,ap_radii 
+
     def store_results(self,var,var_name,store_path):
         try:
             sio.savemat(store_path,{var_name:var})

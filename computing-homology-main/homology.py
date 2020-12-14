@@ -1,6 +1,6 @@
 import numpy
 import numpy.linalg
-import matlab.engine
+
 import scipy.io as sio
 class ComputeBettiNumber():
 #复形的前两位贝蒂数计算
