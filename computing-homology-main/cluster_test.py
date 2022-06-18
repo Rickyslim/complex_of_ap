@@ -1,4 +1,3 @@
-import matlab.engine
 import scipy.io as sio
 import numpy as np
 from numpy import mat
@@ -18,7 +17,7 @@ from cluster import cluster_generator
 # c=np.zeros((1,45))
 # print(type(c))
 # eng=matlab.engine.start_matlab()
-appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_pos_tag.mat'
+appos=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/pos_test.mat'
 a=sio.loadmat(appos)
 apradii=u'D:/1Learning/江苏大学/覆盖问题/复形/复形/results/ap_radii.mat'
 b=sio.loadmat(apradii)
@@ -62,10 +61,9 @@ for i in range(3):
     cluster_pos=cg.get_cluster_ap_pos(cluster,ap_pos)
     # print(cluster_pos,'\n')
     # fence_index=cg.get_cluster_inner_node(cluster_radii)
-    cluster_radii=incell.setmaxradii(cluster,2.5,26)
+    cluster_radii=incell.setmaxradii(cluster_pos,2.5,26)
     contour_ap,contour_border=cg.get_cluster_contour(i+1)
-
-    # print(incell.check_contour_border(contour_border,cluster_pos,cluster_radii))
+    print(incell.check_contour_border(contour_border,cluster_pos,cluster_radii))
     init_bettis=incell.get_init_bettis(cluster_pos,cluster_radii)
     # print(init_bettis)
     incell.opt_radii(init_bettis[1],cluster_radii,cluster_pos,contour_border)
